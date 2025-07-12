@@ -1,0 +1,7 @@
+---
+- name: Process each Pi-hole instance with optimized API calls
+  ansible.builtin.include_tasks:
+    file: process_instance_optimized.yml
+  loop: "{{ pihole_hosts }}"
+  loop_control:
+    loop_var: pihole_instance

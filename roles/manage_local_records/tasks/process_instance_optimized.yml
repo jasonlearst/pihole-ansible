@@ -1,0 +1,25 @@
+---
+- name: Fetch current Pi-hole DNS configuration once
+  sbarbett.pihole.pihole_config_fetcher:
+    url: "{{ pihole_instance.name }}"
+    password: "{{ pihole_instance.password }}"
+  register: pihole_config
+
+- name: Set current configuration facts
+  set_fact:
+    current_hosts_dict: "{{ pihole_config.hosts_config }}"
+    current_cnames_dict: "{{ pihole_config.cnames_config }}"
+
+- name: Process optimized A/AAAA records
+  ansible.builtin.include_tasks:
+    file: process_optimized_host_record.yml
+  loop: "{{ pihole_records | selectattr('type', 'in', ['A', 'AAAA']) | list }}"
+  loop_control:
+    loop_var: record
+
+- name: Process optimized CNAME records
+  ansible.builtin.include_tasks:
+    file: process_optimized_cname_record.yml
+  loop: "{{ pihole_records | selectattr('type', 'equalto', 'CNAME') | list }}"
+  loop_control:
+    loop_var: record

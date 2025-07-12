@@ -1,7 +1,16 @@
 ---
-- name: Process each Pi-hole instance
+- name: Process each Pi-hole instance (optimized)
+  ansible.builtin.include_tasks:
+    file: process_instance_optimized.yml
+  loop: "{{ pihole_hosts }}"
+  loop_control:
+    loop_var: pihole_instance
+  when: pihole_optimized | default(true)
+
+- name: Process each Pi-hole instance (legacy)
   ansible.builtin.include_tasks:
     file: process_instance.yml
   loop: "{{ pihole_hosts }}"
   loop_control:
     loop_var: pihole_instance
+  when: not (pihole_optimized | default(true))
