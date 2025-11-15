@@ -13,7 +13,7 @@
     block_lists_filtered: "{{ block_lists | map('dict2items') | map('selectattr', 'key', 'ne', 'type') | map('items2dict') | list }}"
 
 - name: Process allow lists on {{ pihole_instance.name }}
-  sbarbett.pihole.allow_list:
+  jasonlearst.pihole.allow_list:
     lists: "{{ allow_lists_filtered }}"
     url: "{{ pihole_instance.name }}"
     password: "{{ pihole_instance.password }}"
@@ -21,7 +21,7 @@
   register: allow_lists_result
 
 - name: Process block lists on {{ pihole_instance.name }}
-  sbarbett.pihole.block_list:
+  jasonlearst.pihole.block_list:
     lists: "{{ block_lists_filtered }}"
     url: "{{ pihole_instance.name }}"
     password: "{{ pihole_instance.password }}"

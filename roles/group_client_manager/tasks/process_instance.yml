@@ -2,7 +2,7 @@
 # Process groups first, then clients
 
 - name: Process groups on {{ pihole_instance.name }}
-  sbarbett.pihole.groups:
+  jasonlearst.pihole.groups:
     groups: "{{ pihole_groups }}"
     url: "{{ pihole_instance.name }}"
     password: "{{ pihole_instance.password }}"
@@ -20,7 +20,7 @@
 
 # Process clients after groups
 - name: Process clients on {{ pihole_instance.name }}
-  sbarbett.pihole.clients:
+  jasonlearst.pihole.clients:
     clients: "{{ pihole_clients }}"
     url: "{{ pihole_instance.name }}"
     password: "{{ pihole_instance.password }}"

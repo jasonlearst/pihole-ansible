@@ -1,6 +1,6 @@
 ---
 - name: Manage A record
-  sbarbett.pihole.local_a_record:
+  jasonlearst.pihole.local_a_record:
     host: "{{ inventory_hostname }}"
     ip: "{{ proxmox_net0.ip.split('/')[0] }}"
     state: "present"
@@ -9,7 +9,7 @@
   when: proxmox_net0.ip is defined
 
 - name: Manage AAAA record
-  sbarbett.pihole.local_aaaa_record:
+  jasonlearst.pihole.local_aaaa_record:
     host: "{{ inventory_hostname }}"
     ip: "{{ proxmox_net0.ip6.split('/')[0] }}"
     state: "present"

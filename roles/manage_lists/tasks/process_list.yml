@@ -6,7 +6,7 @@
         msg: "Processing allow list {{ list_item.address }} on {{ pihole_instance.name }}"
 
     - name: Manage allow list
-      sbarbett.pihole.allow_list:
+      jasonlearst.pihole.allow_list:
         address: "{{ list_item.address }}"
         state: "{{ list_item.state }}"
         comment: "{{ list_item.comment | default(omit) }}"
@@ -21,7 +21,7 @@
         msg: "Processing block list {{ list_item.address }} on {{ pihole_instance.name }}"
 
     - name: Manage block list
-      sbarbett.pihole.block_list:
+      jasonlearst.pihole.block_list:
         address: "{{ list_item.address }}"
         state: "{{ list_item.state }}"
         comment: "{{ list_item.comment | default(omit) }}"

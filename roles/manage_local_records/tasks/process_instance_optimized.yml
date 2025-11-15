@@ -1,6 +1,6 @@
 ---
 - name: Fetch current Pi-hole DNS configuration once
-  sbarbett.pihole.pihole_config_fetcher:
+  jasonlearst.pihole.pihole_config_fetcher:
     url: "{{ pihole_instance.name }}"
     password: "{{ pihole_instance.password }}"
   register: pihole_config

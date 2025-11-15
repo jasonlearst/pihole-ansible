@@ -23,7 +23,7 @@
     - existing_cname != {}
 
 - name: Process CNAME record change
-  sbarbett.pihole.local_cname:
+  jasonlearst.pihole.local_cname:
     host: "{{ record.name }}"
     target: "{{ record.data }}"
     ttl: "{{ record.ttl | default(omit) }}"
