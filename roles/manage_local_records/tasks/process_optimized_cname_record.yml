@@ -7,15 +7,15 @@
 - name: Determine if change is needed for present state
   set_fact:
     needs_change: true
-  when: 
+  when:
     - record.state == "present"
     - >
-      existing_cname == {} or 
+      existing_cname == {} or
       existing_cname.target != record.data or
       (record.ttl is defined and existing_cname.ttl != record.ttl) or
       (record.ttl is not defined and existing_cname.ttl is not none)
 
-- name: Determine if change is needed for absent state  
+- name: Determine if change is needed for absent state
   set_fact:
     needs_change: true
   when:

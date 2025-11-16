@@ -5,6 +5,8 @@
   loop: "{{ pihole_hosts }}"
   loop_control:
     loop_var: pihole_instance
+    label: "{{ pihole_instance.name }}"
+  no_log: true
   when: pihole_optimized | default(true)
 
 - name: Process each Pi-hole instance (legacy)
@@ -13,4 +15,6 @@
   loop: "{{ pihole_hosts }}"
   loop_control:
     loop_var: pihole_instance
+    label: "{{ pihole_instance.name }}"
+  no_log: true
   when: not (pihole_optimized | default(true))
