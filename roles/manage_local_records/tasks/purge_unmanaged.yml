@@ -1,0 +1,86 @@
+---
+- name: Safety check - refuse to purge when no records are declared
+  ansible.builtin.fail:
+    msg: >-
+      pihole_purge_unmanaged is enabled but pihole_records is empty.
+      This would delete ALL records from Pi-hole. Declare at least one
+      record or disable purge mode.
+  when: pihole_records | length == 0
+
+- name: Build declared A/AAAA hostnames set
+  ansible.builtin.set_fact:
+    declared_host_keys: >-
+      {{ pihole_records
+         | selectattr('state', 'equalto', 'present')
+         | selectattr('type', 'in', ['A', 'AAAA'])
+         | map(attribute='name')
+         | list }}
+
+- name: Build declared CNAME hostnames set
+  ansible.builtin.set_fact:
+    declared_cname_keys: >-
+      {{ pihole_records
+         | selectattr('state', 'equalto', 'present')
+         | selectattr('type', 'equalto', 'CNAME')
+         | map(attribute='name')
+         | list }}
+
+- name: Compute unmanaged host records
+  ansible.builtin.set_fact:
+    unmanaged_hosts: >-
+      {{ current_hosts_dict.keys() | list
+         | difference(declared_host_keys)
+         | difference(pihole_protected_records)
+         | list }}
+
+- name: Compute unmanaged CNAME records
+  ansible.builtin.set_fact:
+    unmanaged_cnames: >-
+      {{ current_cnames_dict.keys() | list
+         | difference(declared_cname_keys)
+         | difference(pihole_protected_records)
+         | list }}
+
+- name: Display records to be purged
+  ansible.builtin.debug:
+    msg: >-
+      Purging {{ unmanaged_hosts | length }} unmanaged host record(s)
+      and {{ unmanaged_cnames | length }} unmanaged CNAME record(s)
+      from {{ pihole_instance.name }}
+  when: (unmanaged_hosts | length > 0) or (unmanaged_cnames | length > 0)
+
+- name: Purge unmanaged A records
+  sbarbett.pihole.local_a_record:
+    host: "{{ item }}"
+    ip: "{{ current_hosts_dict[item]['A'] }}"
+    state: absent
+    url: "{{ pihole_instance.name }}"
+    password: "{{ pihole_instance.password }}"
+  loop: "{{ unmanaged_hosts }}"
+  loop_control:
+    label: "{{ item }} (A)"
+  when: "'A' in current_hosts_dict[item]"
+
+- name: Purge unmanaged AAAA records
+  sbarbett.pihole.local_aaaa_record:
+    host: "{{ item }}"
+    ip: "{{ current_hosts_dict[item]['AAAA'] }}"
+    state: absent
+    url: "{{ pihole_instance.name }}"
+    password: "{{ pihole_instance.password }}"
+  loop: "{{ unmanaged_hosts }}"
+  loop_control:
+    label: "{{ item }} (AAAA)"
+  when: "'AAAA' in current_hosts_dict[item]"
+
+- name: Purge unmanaged CNAME records
+  sbarbett.pihole.local_cname:
+    host: "{{ item }}"
+    target: "{{ current_cnames_dict[item]['target'] }}"
+    ttl: "{{ current_cnames_dict[item]['ttl'] | default(omit) }}"
+    state: absent
+    url: "{{ pihole_instance.name }}"
+    password: "{{ pihole_instance.password }}"
+  loop: "{{ unmanaged_cnames }}"
+  loop_control:
+    label: "{{ item }} (CNAME)"

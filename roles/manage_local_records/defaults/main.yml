@@ -1,3 +1,11 @@
 # SPDX-License-Identifier: MIT-0
 ---
 # defaults file for collections/ansible_collections/sbarbett/pihole/roles/manage_local_records
+
+# When true, records in Pi-hole not declared in pihole_records (with state: present)
+# will be automatically removed.
+pihole_purge_unmanaged: false
+
+# Hostnames that should never be removed by purge, even when pihole_purge_unmanaged
+# is true. Useful for records managed by other roles or created manually.
+pihole_protected_records: []
