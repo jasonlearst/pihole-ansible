@@ -182,3 +182,4 @@ cython_debug/
 
 # Project documentation
 PROJECT.md
+.claude/

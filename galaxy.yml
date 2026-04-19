@@ -1,11 +1,12 @@
-namespace: sbarbett
+namespace: jasonlearst
 name: pihole
-version: "1.1.2"
+version: "1.2.0"
 readme: README.md
 authors:
   - Shane Barbetta
+  - Jason Learst
 description: >
-  A collection of modules for managing your Pi-hole installation.
+  A collection of modules for managing your Pi-hole installation. Fork with performance optimizations and TTL handling improvements.
 license:
   - "MIT"
 tags:
@@ -13,4 +14,4 @@ tags:
   - dns
   - networking
 dependencies: {}
-repository: https://github.com/sbarbett/pihole-ansible
+repository: https://github.com/jasonlearst/pihole-ansible
