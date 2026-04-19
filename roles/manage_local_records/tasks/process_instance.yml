@@ -1,4 +1,16 @@
 ---
+- name: Fetch current Pi-hole DNS configuration
+  sbarbett.pihole.pihole_config_fetcher:
+    url: "{{ pihole_instance.name }}"
+    password: "{{ pihole_instance.password }}"
+  register: pihole_config
+  no_log: true
+
+- name: Set current configuration facts
+  ansible.builtin.set_fact:
+    current_hosts_dict: "{{ pihole_config.hosts_config }}"
+    current_cnames_dict: "{{ pihole_config.cnames_config }}"
+
 - name: Process each record on {{ pihole_instance.name }}
   ansible.builtin.include_tasks:
     file: process_record.yml

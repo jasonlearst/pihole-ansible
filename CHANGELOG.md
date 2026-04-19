@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New `pihole_config_fetcher` module for fetching DNS configuration in a single API call
+- Optimized local record processing that pre-checks state before making API calls, significantly reducing execution time for large record sets
+
+### Changed
+- Local record processing no longer sleeps 1 second between each record
+
+### Security
+- Added `no_log` and `label` to task loops across all roles to prevent credential exposure in logs
+
 ## [1.1.2] - 2025-12-23
 
 ### Changed
