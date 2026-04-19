@@ -50,7 +50,7 @@
   when: (unmanaged_hosts | length > 0) or (unmanaged_cnames | length > 0)
 
 - name: Purge unmanaged A records
-  sbarbett.pihole.local_a_record:
+  jasonlearst.pihole.local_a_record:
     host: "{{ item }}"
     ip: "{{ current_hosts_dict[item]['A'] }}"
     state: absent
@@ -62,7 +62,7 @@
   when: "'A' in current_hosts_dict[item]"
 
 - name: Purge unmanaged AAAA records
-  sbarbett.pihole.local_aaaa_record:
+  jasonlearst.pihole.local_aaaa_record:
     host: "{{ item }}"
     ip: "{{ current_hosts_dict[item]['AAAA'] }}"
     state: absent
@@ -74,7 +74,7 @@
   when: "'AAAA' in current_hosts_dict[item]"
 
 - name: Purge unmanaged CNAME records
-  sbarbett.pihole.local_cname:
+  jasonlearst.pihole.local_cname:
     host: "{{ item }}"
     target: "{{ current_cnames_dict[item]['target'] }}"
     ttl: "{{ current_cnames_dict[item]['ttl'] | default(omit) }}"
