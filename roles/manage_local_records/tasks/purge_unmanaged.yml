@@ -7,12 +7,21 @@
       record or disable purge mode.
   when: pihole_records | length == 0
 
-- name: Build declared A/AAAA hostnames set
+- name: Build declared A hostnames set
   ansible.builtin.set_fact:
-    declared_host_keys: >-
+    declared_a_keys: >-
       {{ pihole_records
          | selectattr('state', 'equalto', 'present')
-         | selectattr('type', 'in', ['A', 'AAAA'])
+         | selectattr('type', 'equalto', 'A')
+         | map(attribute='name')
+         | list }}
+
+- name: Build declared AAAA hostnames set
+  ansible.builtin.set_fact:
+    declared_aaaa_keys: >-
+      {{ pihole_records
+         | selectattr('state', 'equalto', 'present')
+         | selectattr('type', 'equalto', 'AAAA')
          | map(attribute='name')
          | list }}
 
@@ -25,11 +34,35 @@
          | map(attribute='name')
          | list }}
 
-- name: Compute unmanaged host records
+- name: Build current A hostnames set
   ansible.builtin.set_fact:
-    unmanaged_hosts: >-
-      {{ current_hosts_dict.keys() | list
-         | difference(declared_host_keys)
+    current_a_hosts: >-
+      {{ current_hosts_dict | dict2items
+         | selectattr('value.A', 'defined')
+         | map(attribute='key')
+         | list }}
+
+- name: Build current AAAA hostnames set
+  ansible.builtin.set_fact:
+    current_aaaa_hosts: >-
+      {{ current_hosts_dict | dict2items
+         | selectattr('value.AAAA', 'defined')
+         | map(attribute='key')
+         | list }}
+
+- name: Compute unmanaged A records
+  ansible.builtin.set_fact:
+    unmanaged_a: >-
+      {{ current_a_hosts
+         | difference(declared_a_keys)
+         | difference(pihole_protected_records)
+         | list }}
+
+- name: Compute unmanaged AAAA records
+  ansible.builtin.set_fact:
+    unmanaged_aaaa: >-
+      {{ current_aaaa_hosts
+         | difference(declared_aaaa_keys)
          | difference(pihole_protected_records)
          | list }}
 
@@ -44,10 +77,10 @@
 - name: Display records to be purged
   ansible.builtin.debug:
     msg: >-
-      Purging {{ unmanaged_hosts | length }} unmanaged host record(s)
-      and {{ unmanaged_cnames | length }} unmanaged CNAME record(s)
+      Purging {{ unmanaged_a | length }} A, {{ unmanaged_aaaa | length }} AAAA,
+      and {{ unmanaged_cnames | length }} CNAME unmanaged record(s)
       from {{ pihole_instance.name }}
-  when: (unmanaged_hosts | length > 0) or (unmanaged_cnames | length > 0)
+  when: (unmanaged_a | length > 0) or (unmanaged_aaaa | length > 0) or (unmanaged_cnames | length > 0)
 
 - name: Purge unmanaged A records
   jasonlearst.pihole.local_a_record:
@@ -56,10 +89,9 @@
     state: absent
     url: "{{ pihole_instance.name }}"
     password: "{{ pihole_instance.password }}"
-  loop: "{{ unmanaged_hosts }}"
+  loop: "{{ unmanaged_a }}"
   loop_control:
     label: "{{ item }} (A)"
-  when: "'A' in current_hosts_dict[item]"
 
 - name: Purge unmanaged AAAA records
   jasonlearst.pihole.local_aaaa_record:
@@ -68,10 +100,9 @@
     state: absent
     url: "{{ pihole_instance.name }}"
     password: "{{ pihole_instance.password }}"
-  loop: "{{ unmanaged_hosts }}"
+  loop: "{{ unmanaged_aaaa }}"
   loop_control:
     label: "{{ item }} (AAAA)"
-  when: "'AAAA' in current_hosts_dict[item]"
 
 - name: Purge unmanaged CNAME records
   jasonlearst.pihole.local_cname:
