@@ -17,3 +17,8 @@
   loop: "{{ pihole_records }}"
   loop_control:
     loop_var: record
+
+- name: Purge unmanaged records from {{ pihole_instance.name }}
+  ansible.builtin.include_tasks:
+    file: purge_unmanaged.yml
+  when: pihole_purge_unmanaged | default(false) | bool
