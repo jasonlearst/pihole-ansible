@@ -13,7 +13,11 @@ module: pihole_config_fetcher
 short_description: Fetch Pi-hole DNS configuration once for batch processing
 description:
     - This module fetches both hosts and CNAME records configuration from Pi-hole in a single call.
-    - Used by the optimized record processing path to avoid redundant API calls per record.
+    - This is an implementation detail of the C(manage_local_records) role, which uses it to read
+      the live configuration once per instance and then apply only the records that differ.
+    - It is not part of the collection's supported interface. Its return shape may change without
+      a deprecation cycle, so playbooks should not depend on it. Use the C(manage_local_records)
+      role, or the C(local_a_record), C(local_aaaa_record) and C(local_cname) modules instead.
 options:
     password:
         description:
@@ -26,20 +30,21 @@ options:
             - The URL of the Pi-hole instance.
         required: true
         type: str
+requirements:
+    - pihole6api
 author:
-    - Shane Barbetta (@sbarbett)
+    - Jason Learst (@jasonlearst)
 '''
 
 EXAMPLES = r'''
-- name: Fetch Pi-hole DNS configuration
+# Internal to the manage_local_records role; shown here only to document how the
+# role consumes it. Use the role rather than calling this module directly.
+- name: Fetch current Pi-hole DNS configuration
   sbarbett.pihole.pihole_config_fetcher:
-    url: "https://your-pihole.example.com"
-    password: "{{ pihole_password }}"
-  register: pihole_config
-
-- name: Show current A records
-  ansible.builtin.debug:
-    msg: "{{ pihole_config.hosts_config }}"
+    url: "{{ pihole_instance.name }}"
+    password: "{{ pihole_instance.password }}"
+  register: manage_local_records_config
+  no_log: true
 '''
 
 RETURN = r'''

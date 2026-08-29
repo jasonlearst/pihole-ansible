@@ -17,7 +17,6 @@ This collection includes:
   - `allow_list`: Manage allow lists.
   - `groups`: Manage groups.
   - `clients`: Manage clients.
-  - `pihole_config_fetcher`: Fetch DNS configuration (hosts and CNAMEs) in a single API call for optimized batch processing.
 
 - **Roles:**
   - `manage_local_records`: A role that iterates over one or more PiHole hosts and manages a batch of local DNS records (both A and CNAME) as defined by the user. ([README](https://github.com/sbarbett/pihole-ansible/blob/main/roles/manage_local_records/README.md))
